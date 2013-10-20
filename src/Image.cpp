@@ -7,12 +7,10 @@ Image::Image(): Contenu2D <unsigned int>(0, 0), m_uiType(PGM), m_uiValeurMax(0)
 
 Image::Image(const unsigned int t, const unsigned int w, const unsigned int h): Contenu2D <unsigned int>(w, h), m_uiType(t), m_uiValeurMax(255)
 {
-    unsigned int taille = m_uiLargeur*m_uiHauteur;
     if(m_uiType == PPM)
     {
-        taille = taille*3;
+        setTaille(m_uiLargeur*3, m_uiHauteur*3);
     }
-    setTaille(taille, 0);
 }
 
 Image::Image(const std::string& path)
@@ -209,3 +207,51 @@ void Image::appliqueFC(FonctionCorrespondance &fc)
             set(i, j, fc.getValeur(at(i,j)));
 }
 
+Image Image::getZone(unsigned int i, unsigned int j, unsigned int largeur, unsigned int hauteur)
+{
+    unsigned int xMin = i < (largeur / 2) ? 0 : i - (largeur / 2);
+    unsigned int yMin = j < (hauteur / 2) ? 0 : j - (hauteur / 2);
+    unsigned int xMax = (i + (largeur / 2) >= m_uiLargeur) ? m_uiLargeur - 1 : i + (largeur / 2);
+    unsigned int yMax = (j + (hauteur / 2) >= m_uiHauteur) ? m_uiHauteur - 1 : j + (hauteur / 2);
+
+    unsigned int nouvelleLargeur = xMax - xMin + 1;
+    unsigned int nouvelleHauteur = yMax - yMin + 1;
+
+
+    Image imgZone(m_uiType, nouvelleLargeur, nouvelleHauteur);
+
+    for(unsigned int j = 0; j < nouvelleHauteur; j++)
+    {
+        for(unsigned int i = 0; i < nouvelleLargeur; i++)
+        {
+            imgZone.set(i, j, at(xMin + i, yMin + j));
+        }
+    }
+
+    return imgZone;
+}
+
+Image Image::specificationGlissante(Histogramme histo, unsigned int largeur, unsigned int hauteur)
+{
+    Image imgSortie(*this);
+    Image imgZone;
+    Histogramme histoZone;
+    unsigned int nbPix = 0;
+    FonctionCorrespondance fc;
+
+    for(unsigned int j = 0; j < m_uiHauteur; j++)
+    {
+        for(unsigned int i = 0; i < m_uiLargeur; i++)
+        {
+            imgZone = getZone(i, j, largeur, hauteur);
+            if(imgZone.getTaille() != nbPix)
+            {
+                histoZone = histo.getDivise(imgZone.getTaille());
+                nbPix = imgZone.getTaille();
+            }
+            fc = FonctionCorrespondance::specification(imgZone.getHistogramme(), histoZone);
+            imgSortie.set(i, j, fc.getValeur(imgZone.at(imgZone.getLargeur()/2,imgZone.getHauteur()/2)));
+        }
+    }
+    return imgSortie;
+}

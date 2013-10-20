@@ -32,6 +32,9 @@ public:
 
     void appliqueFC(FonctionCorrespondance &fc);
 
+    Image getZone(unsigned int i, unsigned int j, unsigned int largeur, unsigned int hauteur);
+    Image specificationGlissante(Histogramme histo, unsigned int largeur, unsigned int hauteur);
+
 };
 
 #endif // IMAGE_HPP

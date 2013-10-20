@@ -85,8 +85,42 @@ Histogramme Histogramme::getCumule() const
 {
     Histogramme histo(*this);
     unsigned int size = histo.getTaille();
-    for(unsigned int i=1; i< size; i++)
+    for(unsigned int i = 1; i < size; i++)
         histo.setValeur(i, histo.getValeur(i)+histo.getValeur(i-1));
+    return histo;
+}
+
+Histogramme Histogramme::getPlat() const
+{
+    Histogramme histo(*this);
+    unsigned int size = histo.getTaille();
+    unsigned int nbPixRestant = histo.getNbPixel();
+    unsigned int valeur;
+    for(unsigned int i = 0; i < size; i++)
+    {
+        valeur = nbPixRestant / (size - i);
+        histo.setValeur(i, valeur);
+        nbPixRestant = nbPixRestant - valeur;
+    }
+    return histo;
+}
+
+Histogramme Histogramme::getDivise(unsigned int nouvNbPix)
+{
+    Histogramme histo(*this);
+    Histogramme histoCumul(getCumule());
+    unsigned int size = histo.getTaille();
+    unsigned int nbPix = histo.getNbPixel();
+
+    unsigned int nbPixSauv = 0;
+    unsigned int valeur;
+
+    for(unsigned int i = 0; i < size; i++)
+    {
+        valeur = ((histoCumul.getValeur(i) + (getNbPixel() / (nouvNbPix * 2))) * nouvNbPix) / nbPix - nbPixSauv ;
+        histo.setValeur(i, valeur);
+        nbPixSauv += valeur;
+    }
     return histo;
 }
 

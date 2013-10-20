@@ -26,6 +26,8 @@ public:
     void exportHisto(const std::string& path);
 
     Histogramme getCumule() const;
+    Histogramme getPlat() const;
+    Histogramme getDivise(unsigned int nouvNbPix);
 
     void setValeur(const unsigned int i, const unsigned int valeur);
     unsigned int getValeur(unsigned int i) const;

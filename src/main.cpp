@@ -1,4 +1,5 @@
 #include "../include/Image.hpp"
+#include "../include/Organisation.hpp"
 
 int main (int argc, char* argv[])
 {
@@ -6,8 +7,11 @@ int main (int argc, char* argv[])
     std::string path1 = "./images/baboon.pgm";
     std::string path1Ecriture = "./images/photoEcriture.pgm";
     std::string path2 = "./images/photoBrut.pgm";
-    std::string path2Ecriture = "./images/photoInvEcriture.pgm";
-    std::string path3Ecriture = "./images/photoEgalEcriture.pgm";
+    std::string pathInv = "./images/photoInvEcriture.pgm";
+    std::string pathEgal = "./images/photoEgalEcriture.pgm";
+    std::string pathSpe = "./images/photoSpeEcriture.pgm";
+    std::string pathSpeGli = "./images/photoSpeGliEcriture.pgm";
+    std::string pathIdent = "./images/photoIdentEcriture.pgm";
 
     std::string path1Histo = "./histogrammes/Histo.txt";
 
@@ -35,16 +39,24 @@ int main (int argc, char* argv[])
     Histogramme histo1 = myImage1.getHistogramme();
     histo1.exportHisto(path1Histo);
 
-    FonctionCorrespondance egal = FonctionCorrespondance::egalisation(myImage2.getValeurMax(), myImage2.getHistogramme());
+    FonctionCorrespondance ident = FonctionCorrespondance::identite(myImage2.getValeurMax());
+    myImage2.appliqueFC(ident);
+    myImage2.exportImage(pathIdent,BINAIRE);
 
-    myImage2.appliqueFC(egal);
-    myImage2.exportImage(path2Ecriture,BINAIRE);
+    Image myImage3(myImage1);
+    Histogramme histo3 = myImage3.getHistogramme();
+    FonctionCorrespondance spe = FonctionCorrespondance::specification(histo3, histo3.getPlat());
+    myImage3.appliqueFC(spe);
+    myImage3.exportImage(pathSpe,BINAIRE);
 
-    Image myImage3(myImage2);
-    FonctionCorrespondance inv = FonctionCorrespondance::inverse(myImage3.getValeurMax());
+    myImage2 = myImage2.specificationGlissante(myImage2.getHistogramme().getPlat(), 21, 21);
+    myImage2.exportImage(pathSpeGli,BINAIRE);
 
-    myImage3.appliqueFC(inv);
-    myImage3.exportImage(path3Ecriture,BINAIRE);
+    Nuage<int> nuage;
+    nuage.importNuage("./images/points.txt");
+    Organisation<int> organisation(nuage);
+    organisation.kMoy(2,1, Organisation<int>::EUCLIDIENNE);
+    organisation.exportOrganisation("./images/classification.txt");
 
     return 0;
 }

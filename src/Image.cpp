@@ -249,8 +249,57 @@ Image Image::specificationGlissante(Histogramme histo, unsigned int largeur, uns
                 histoZone = histo.getDivise(imgZone.getTaille());
                 nbPix = imgZone.getTaille();
             }
+            //fc = FonctionCorrespondance::egalisation(imgZone.getHistogramme());
             fc = FonctionCorrespondance::specification(imgZone.getHistogramme(), histoZone);
-            imgSortie.set(i, j, fc.getValeur(imgZone.at(imgZone.getLargeur()/2,imgZone.getHauteur()/2)));
+            imgSortie.set(i, j, fc.getValeur(at(i, j)));
+        }
+    }
+    return imgSortie;
+}
+
+Image Image::filtreMedian()
+{
+    unsigned int largeur = 3;
+    unsigned int hauteur = 3;
+    Image imgSortie(*this);
+    Image imgZone;
+    unsigned int tableau[9];
+    unsigned int modif = false;
+    unsigned int tmp;
+    unsigned int moy;
+    for(unsigned int j = 0; j < m_uiHauteur; j++)
+    {
+        for(unsigned int i = 0; i < m_uiLargeur; i++)
+        {
+            imgZone = getZone(i, j, largeur, hauteur);
+            for(unsigned int k = 0; k < imgZone.getHauteur(); k++)
+            {
+                for(unsigned int l = 0; l < imgZone.getLargeur(); l++)
+                {
+                    tableau[k*imgZone.getLargeur()+l] = imgZone.at(l,k);
+                    moy = imgZone.at(l,k);
+                }
+            }
+
+            if(abs((moy - at(i, j)) / (imgZone.getTaille() - 1) - at(i, j)) > 50)
+            {
+                do
+                {
+                    modif = false;
+                    for(unsigned int m = 0; m < imgZone.getTaille() - 1; m++)
+                    {
+                        if(tableau[m] > tableau[m + 1])
+                        {
+                            tmp = tableau[m + 1];
+                            tableau[m + 1] = tableau[m];
+                            tableau[m] = tmp;
+                            modif = true;
+                        }
+                    }
+
+                }while(modif == true);
+                imgSortie.set(i, j, tableau[imgZone.getTaille() / 2]);
+            }
         }
     }
     return imgSortie;

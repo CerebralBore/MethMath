@@ -7,6 +7,8 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
+#include <stdlib.h>
+#include <time.h>
 
 #include "Point.hpp"
 
@@ -20,6 +22,8 @@ public:
     Nuage();
     Nuage(const Nuage<T>&);
     ~Nuage();
+
+    void randNuage(unsigned int nbPoint);
 
     void importNuage(const std::string);
     void exportNuage(const std::string) const;
@@ -49,6 +53,22 @@ Nuage<T>::Nuage(const Nuage<T>& other) : points(other.getPoints())
 template <typename T>
 Nuage<T>::~Nuage()
 {
+}
+
+template <typename T>
+void Nuage<T>::randNuage(unsigned int nbPoint)
+{
+    Point<T> p;
+
+    srand (time(NULL));
+
+    unsigned int i;
+    for(i = 0; i < nbPoint; i++)
+    {
+        p.x = rand() % 200;
+        p.y = rand() % 200;
+        points.push_back(p);
+    }
 }
 
 template <typename T>

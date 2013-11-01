@@ -38,6 +38,12 @@ public:
     void kMoy(const unsigned int, const unsigned int, Distance);
 
     Nuage<T> getNuage() const;
+
+    int getNbGroupe() const;
+    Point<T>  getCentreGroupe(int i) const;
+    Nuage<T> getNuageGroupe(int i) const;
+
+
 };
 
 template <typename T>
@@ -153,12 +159,12 @@ void Organisation<T>::randomCentres(const unsigned int k)
 
     for(unsigned int i=0; i<k; i++)
     {
-    position = rand()%(nuage.getTaille());
+        position = rand()%(nuage.getTaille());
 
-    Groupe<T> groupe;
-    groupe.setCentre(nuage.getValeur(position));
+        Groupe<T> groupe;
+        groupe.setCentre(nuage.getValeur(position));
 
-    groupes.push_back(groupe);
+        groupes.push_back(groupe);
     }
 }
 
@@ -171,8 +177,8 @@ void Organisation<T>::calculNvCentre(Groupe<T>& groupe)
 
     for(unsigned int i=0; i<nbPoints; i++)
     {
-    baryX += groupe.getNuageValeur(i).x;
-    baryY += groupe.getNuageValeur(i).y;
+        baryX += groupe.getNuageValeur(i).x;
+        baryY += groupe.getNuageValeur(i).y;
     }
 
     Point<T> point;
@@ -198,6 +204,24 @@ template <typename T>
 Nuage<T> Organisation<T>::getNuage() const
 {
     return nuage;
+}
+
+template <typename T>
+int Organisation<T>::getNbGroupe() const
+{
+    return groupes.size();
+}
+
+template <typename T>
+Point<T>  Organisation<T>::getCentreGroupe(int i) const
+{
+    return groupes.at(i).getCentre();
+}
+
+template <typename T>
+Nuage<T> Organisation<T>::getNuageGroupe(int i) const
+{
+    return groupes.at(i).getNuage();
 }
 
 #endif

@@ -23,6 +23,7 @@ struct Point
     {
         x = point.x;
         y = point.y;
+        return *this;
     }
 };
 

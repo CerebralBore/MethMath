@@ -34,6 +34,7 @@ public:
 
     Image getZone(unsigned int i, unsigned int j, unsigned int largeur, unsigned int hauteur);
     Image specificationGlissante(Histogramme histo, unsigned int largeur, unsigned int hauteur);
+    Image filtreMedian();
 
 };
 

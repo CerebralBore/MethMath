@@ -53,6 +53,7 @@ Nuage<T>::Nuage(const Nuage<T>& other) : points(other.getPoints())
 template <typename T>
 Nuage<T>::~Nuage()
 {
+    points.clear();
 }
 
 template <typename T>

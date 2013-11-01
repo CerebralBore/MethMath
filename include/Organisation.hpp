@@ -67,7 +67,7 @@ Organisation<T>::Organisation(const Nuage<T>& nuage)
 template <typename T>
 Organisation<T>::~Organisation()
 {
-
+    groupes.clear();
 }
 
 template <typename T>

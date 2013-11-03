@@ -29,7 +29,13 @@ int main (int argc, char* argv[])
     std::string pathIdent = "./images/photoIdentEcriture.pgm";
     std::string pathMed = "./images/photoMedEcriture.pgm";
 
-    std::string path1Histo = "./histogrammes/Histo.txt";
+    std::string path1Histo = "./images/Histo.txt";
+    std::string pathInvHisto = "./images/HistoInvEcriture.txt";
+    std::string pathEgalHisto = "./images/HistoEgalEcriture.txt";
+    std::string pathSpeHisto = "./images/HistoSpeEcriture.txt";
+    std::string pathSpeGliHisto = "./images/HistoSpeGliEcriture.txt";
+    std::string pathIdentHisto = "./images/HistoIdentEcriture.txt";
+    std::string pathMedHisto = "./images/HistoMedEcriture.txt";
 
     char key = '-';
 
@@ -40,6 +46,8 @@ int main (int argc, char* argv[])
     FonctionCorrespondance fc;
 
     int w = 600;
+
+    myImage1.getHistogramme().exportHisto(path1Histo);
 
     cv::Mat img = cv::imread(path1);
     cv::Mat imgNuage(w, w, CV_32FC3);
@@ -63,6 +71,7 @@ int main (int argc, char* argv[])
                 fc = FonctionCorrespondance::identite(myImage2.getValeurMax());
                 myImage2.appliqueFC(fc);
                 myImage2.exportImage(pathIdent, BINAIRE);
+                myImage2.getHistogramme().exportHisto(pathIdentHisto);
                 img = cv::imread(pathIdent);
                 cv::imshow("identite", img);
             }
@@ -74,6 +83,7 @@ int main (int argc, char* argv[])
                 fc = FonctionCorrespondance::inverse(myImage2.getValeurMax());
                 myImage2.appliqueFC(fc);
                 myImage2.exportImage(pathInv, BINAIRE);
+                myImage2.getHistogramme().exportHisto(pathInvHisto);
                 img = cv::imread(pathInv);
                 cv::imshow("inverse", img);
             }
@@ -85,6 +95,7 @@ int main (int argc, char* argv[])
                 fc = FonctionCorrespondance::egalisation(myImage2.getHistogramme());
                 myImage2.appliqueFC(fc);
                 myImage2.exportImage(pathEgal, BINAIRE);
+                myImage2.getHistogramme().exportHisto(pathEgalHisto);
                 img = cv::imread(pathEgal);
                 cv::imshow("egalisation", img);
             }
@@ -96,6 +107,7 @@ int main (int argc, char* argv[])
                 fc = FonctionCorrespondance::specification(myImage2.getHistogramme(), myImage2.getHistogramme().getPlat());
                 myImage2.appliqueFC(fc);
                 myImage2.exportImage(pathSpe, BINAIRE);
+                myImage2.getHistogramme().exportHisto(pathSpeHisto);
                 img = cv::imread(pathSpe);
                 cv::imshow("specification", img);
             }
@@ -104,8 +116,9 @@ int main (int argc, char* argv[])
             {
                 //fc specification glissante
                 myImage2 = myImage1;
-                myImage2 = myImage2.specificationGlissante(myImage2.getHistogramme().getPlat(), 21, 21);
+                myImage2 = myImage2.specificationGlissante(myImage2.getHistogramme().getPlat(), 51, 51);
                 myImage2.exportImage(pathSpeGli, BINAIRE);
+                myImage2.getHistogramme().exportHisto(pathSpeGliHisto);
                 img = cv::imread(pathSpeGli);
                 cv::imshow("specification glissante", img);
             }
@@ -116,6 +129,7 @@ int main (int argc, char* argv[])
                 myImage2 = myImage1;
                 myImage2 = myImage2.filtreMedian();
                 myImage2.exportImage(pathMed,BINAIRE);
+                myImage2.getHistogramme().exportHisto(pathMedHisto);
                 img = cv::imread(pathMed);
                 cv::imshow("filtre median", img);
             }

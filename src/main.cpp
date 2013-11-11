@@ -5,18 +5,16 @@
 #include <stdlib.h>
 #include <time.h>
 
-/*void dessineP(cv::mat& img, int x, int y, cv::Vec3f coul)
+std::vector<cv::Point2i> seqPoint;
+
+void mouseEvent(int evt, int x, int y, int flags, void* param)
 {
-    img.at<cv::Vec3f>(x * 3, i * 3) = coul;
-
-    img.at<cv::Vec3f>(x * 3 + 2, y * 3) = coul;
-
-    img.at<cv::Vec3f>(x * 3, y * 3 + 2) = coul;
-
-    img.at<cv::Vec3f>(x * 3 + 2, y * 3 + 2) = coul;
-
-    img.at<cv::Vec3f>(x * 3 + 1, y * 3 + 1) = coul;
-}*/
+    if(evt==CV_EVENT_LBUTTONDOWN)
+    {
+        printf("%d %d\n",x,y);
+        seqPoint.push_back(cv::Point2i(x, y));
+    }
+}
 
 int main (int argc, char* argv[])
 {
@@ -29,13 +27,13 @@ int main (int argc, char* argv[])
     std::string pathIdent = "./images/photoIdentEcriture.pgm";
     std::string pathMed = "./images/photoMedEcriture.pgm";
 
-    std::string path1Histo = "./images/Histo.txt";
-    std::string pathInvHisto = "./images/HistoInvEcriture.txt";
-    std::string pathEgalHisto = "./images/HistoEgalEcriture.txt";
-    std::string pathSpeHisto = "./images/HistoSpeEcriture.txt";
-    std::string pathSpeGliHisto = "./images/HistoSpeGliEcriture.txt";
-    std::string pathIdentHisto = "./images/HistoIdentEcriture.txt";
-    std::string pathMedHisto = "./images/HistoMedEcriture.txt";
+    std::string path1Histo = "./histogrammes/Histo.txt";
+    std::string pathInvHisto = "./histogrammes/HistoInvEcriture.txt";
+    std::string pathEgalHisto = "./histogrammes/HistoEgalEcriture.txt";
+    std::string pathSpeHisto = "./histogrammes/HistoSpeEcriture.txt";
+    std::string pathSpeGliHisto = "./histogrammes/HistoSpeGliEcriture.txt";
+    std::string pathIdentHisto = "./histogrammes/HistoIdentEcriture.txt";
+    std::string pathMedHisto = "./histogrammes/HistoMedEcriture.txt";
 
     char key = '-';
 
@@ -50,16 +48,19 @@ int main (int argc, char* argv[])
     myImage1.getHistogramme().exportHisto(path1Histo);
 
     cv::Mat img = cv::imread(path1);
+
     cv::Mat imgNuage(w, w, CV_32FC3);
     cv::Scalar coul;
+
+    cv::Mat imgAF = cv::Mat::zeros(w, w, CV_32F);
 
     cv::imshow("original", img);
 
     while(key != 'q' && key != 'Q')
     {
         key = '-';
-        std::cout << "i : modification d'image" << std::endl << "n : nuage de points" << std::endl;
-        while(key != 'q' && key != 'Q' && key != 'i' && key != 'n') key = cvWaitKey(50);
+        std::cout << "i : modification d'image" << std::endl << "n : nuage de points" << std::endl << "a : analyse frequentielle" << std::endl;
+        while(key != 'q' && key != 'Q' && key != 'a' && key != 'i' && key != 'n') key = cvWaitKey(50);
         if(key == 'i')
         {
             std::cout << "a : fc identite" << std::endl << "z : fc inverse" << std::endl << "e : fc egalisation" << std::endl << "r : fc specification" << std::endl << "t : fc specification glissante" << std::endl << "y : filtre median" << std::endl;
@@ -159,7 +160,7 @@ int main (int argc, char* argv[])
             std::cout << "combien de centres ?" << std::endl;
             std::cin >> nbP;
 
-            organisation.kMoy(nbP,1, Organisation<int>::EUCLIDIENNE);
+            organisation.kMoy(nbP, 10, Organisation<int>::EUCLIDIENNE);
 
             srand (time(NULL));
             for(int i = 0; i < organisation.getNbGroupe(); i++)
@@ -168,7 +169,7 @@ int main (int argc, char* argv[])
                 coul[1] = rand() / (float) RAND_MAX;
                 coul[2] = rand() / (float) RAND_MAX;
 
-                cv::circle(imgNuage, cv::Point(organisation.getCentreGroupe(i).x * 3 + 1, w - organisation.getCentreGroupe(i).y * 3 + 1), 2, coul, -1, 8);
+                cv::circle(imgNuage, cv::Point(organisation.getCentreGroupe(i).x * 3 + 1, w - organisation.getCentreGroupe(i).y * 3 + 1), 2, cv::Scalar(0, 0, 1), -1, 8);
 
                 for(unsigned int j = 0; j < organisation.getNuageGroupe(i).getTaille(); j++)
                 {
@@ -177,11 +178,36 @@ int main (int argc, char* argv[])
             }
             cv::imshow("nuage de points", imgNuage);
 
-            organisation.exportOrganisation("./images/classification.txt");
+            //organisation.exportOrganisation("./images/classification.txt");
+        }
+        if(key == 'a')
+        {
+            //analyse frequentielle
+            cv::Mat imgAFTemp = imgAF;
+
+            cv::imshow("analyse frequentielle", imgAFTemp);
+
+            cvSetMouseCallback("analyse frequentielle", mouseEvent, 0);
+
+            while( 1 )
+            {
+                imgAFTemp = imgAF;
+                cv::imshow("analyse frequentielle", imgAFTemp);
+
+                for(unsigned int i = 0; i < seqPoint.size(); i++)
+                    if(i + 1 < seqPoint.size())
+                    {
+                        line(imgAF, seqPoint.at(i), seqPoint.at(i + 1), cv::Scalar(1, 1, 1), 1, 8);
+                    }
+
+                if(cvWaitKey(15) == 27)
+                    break;
+            }
+            for(unsigned int i = 0; i < seqPoint.size(); i++)
+                printf("%d %d\n",seqPoint.at(i).x,seqPoint.at(i).y);
+            cvDestroyWindow("analyse frequentielle");
         }
     }
-
-
     cvDestroyAllWindows();
 
 

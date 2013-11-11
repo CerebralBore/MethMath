@@ -31,6 +31,7 @@ public:
     void ajoutPoint(const T, const T);
     void ajoutPoint(const Point<T>&);
     void enlevePoint(const unsigned int);
+    void videNuagePoint();
 
     inline void setValeur(const unsigned int i, const Point<T>& point){ points[i] = point; }
     inline Point<T> getValeur(const int i) const { return points[i]; }
@@ -143,6 +144,12 @@ template <typename T>
 void Nuage<T>::enlevePoint(const unsigned int position)
 {
     points.erase(points.begin()+position);
+}
+
+template <typename T>
+void Nuage<T>::videNuagePoint()
+{
+    points.clear();
 }
 
 template <typename T>

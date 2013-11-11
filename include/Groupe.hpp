@@ -12,6 +12,7 @@ private:
 
 public:
     void ajoutPointNuage(const Point<T>&);
+    void videNuage();
 
     Point<T> getCentre() const;
     Nuage<T> getNuage() const;
@@ -25,6 +26,12 @@ template <typename T>
 void Groupe<T>::ajoutPointNuage(const Point<T>& point)
 {
     nuage.ajoutPoint(point);
+}
+
+template <typename T>
+void Groupe<T>::videNuage()
+{
+    nuage.videNuagePoint();
 }
 
 template <typename T>

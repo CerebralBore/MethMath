@@ -3,6 +3,7 @@ SRC_DIR         = ./src/
 OBJ_DIR         = ./obj/
 DEP_DIR         = ./dep/
 BIN_DIR         = ./
+HIS_DIR         = ./histogrammes/
 
 # bin name
 BIN             = ./bin/MM
@@ -57,7 +58,7 @@ valgrind: $(BIN_DIR)/$(BIN)
 	valgrind $(BIN_DIR)/$(BIN)
 
 clean:
-	rm -f $(OBJ_DIR)*.o $(SRC_DIR)*~ $(DEP_DIR)*.d *~ $(BIN_DIR)/$(BIN)
+	rm -f $(OBJ_DIR)*.o $(SRC_DIR)*~ $(DEP_DIR)*.d *~ $(BIN_DIR)/$(BIN) $(HIS_BIN)*.txt 
 
 distclean: clean
 	rm -f $(BIN_DIR)/$(BIN) 

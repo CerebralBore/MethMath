@@ -124,6 +124,15 @@ void Organisation<T>::kMoy(const unsigned int k, const unsigned int t, Distance 
 
     do
     {
+        if(iteration > 0)
+        {
+            for(unsigned int i=0; i<nbClasses; i++)
+            {
+                calculNvCentre(groupes[i]);
+                groupes[i].videNuage();
+            }
+        }
+
         for(unsigned int i=0; i<nbPoints; i++)
         {
             dist = ((*this).*fonctionDistance)(groupes[0].getCentre(), nuage.getValeur(i));
@@ -142,9 +151,8 @@ void Organisation<T>::kMoy(const unsigned int k, const unsigned int t, Distance 
 
             groupes[indice].ajoutPointNuage(nuage.getValeur(i));
         }
-        for(unsigned int i=0; i<nbClasses; i++)
-            calculNvCentre(groupes[i]);
 
+        std::cout << "iteration" << iteration << std::endl;
         iteration++;
     }
     while(iteration<t);

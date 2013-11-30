@@ -1,18 +1,39 @@
 #include "../include/Image.hpp"
 #include "../include/Organisation.hpp"
+#include "../include/Contour.hpp"
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 #include <stdlib.h>
 #include <time.h>
 
 std::vector<cv::Point2i> seqPoint;
+int enregistre;
+
+#define DISTMAX 10
 
 void mouseEvent(int evt, int x, int y, int flags, void* param)
 {
-    if(evt==CV_EVENT_LBUTTONDOWN)
+
+    if(evt == CV_EVENT_LBUTTONDOWN)
     {
-        printf("%d %d\n",x,y);
-        seqPoint.push_back(cv::Point2i(x, y));
+        if(!enregistre)
+        {
+            printf("%d %d\n",x,y);
+            if(seqPoint.size() == 0)
+                seqPoint.push_back(cv::Point2i(x, y));
+            else
+            {
+                if(seqPoint[seqPoint.size()-1].x != x || seqPoint[seqPoint.size()-1].y != y)
+                {
+                    if((pow(seqPoint[0].x - x, 2) + pow(seqPoint[0].y - y, 2)) < pow(DISTMAX, 2))
+                    {
+                        enregistre = 1;
+                    }
+                    else
+                        seqPoint.push_back(cv::Point2i(x, y));
+                }
+            }
+        }
     }
 }
 
@@ -117,7 +138,7 @@ int main (int argc, char* argv[])
             {
                 //fc specification glissante
                 myImage2 = myImage1;
-                myImage2 = myImage2.specificationGlissante(myImage2.getHistogramme().getPlat(), 51, 51);
+                myImage2 = myImage2.specificationGlissante(myImage2.getHistogramme().getPlat(), 21, 21);
                 myImage2.exportImage(pathSpeGli, BINAIRE);
                 myImage2.getHistogramme().exportHisto(pathSpeGliHisto);
                 img = cv::imread(pathSpeGli);
@@ -134,6 +155,7 @@ int main (int argc, char* argv[])
                 img = cv::imread(pathMed);
                 cv::imshow("filtre median", img);
             }
+            key = '-';
         }
 
         if(key == 'n')
@@ -179,6 +201,7 @@ int main (int argc, char* argv[])
             cv::imshow("nuage de points", imgNuage);
 
             //organisation.exportOrganisation("./images/classification.txt");
+            key = '-';
         }
         if(key == 'a')
         {
@@ -189,7 +212,8 @@ int main (int argc, char* argv[])
 
             cvSetMouseCallback("analyse frequentielle", mouseEvent, 0);
 
-            while( 1 )
+            enregistre = 0;
+            while(enregistre != 1)
             {
                 imgAFTemp = imgAF;
                 cv::imshow("analyse frequentielle", imgAFTemp);
@@ -203,9 +227,18 @@ int main (int argc, char* argv[])
                 if(cvWaitKey(15) == 27)
                     break;
             }
-            for(unsigned int i = 0; i < seqPoint.size(); i++)
-                printf("%d %d\n",seqPoint.at(i).x,seqPoint.at(i).y);
+
+            line(imgAF, seqPoint.at(seqPoint.size() - 1), seqPoint.at(0), cv::Scalar(1, 1, 1), 1, 8);
+
+            imgAFTemp = imgAF;
+
+            cv::imshow("analyse frequentielle", imgAFTemp);
+            cvWaitKey();
+
             cvDestroyWindow("analyse frequentielle");
+            seqPoint.clear();
+            imgAF.setTo(0);
+            key = '-';
         }
     }
     cvDestroyAllWindows();

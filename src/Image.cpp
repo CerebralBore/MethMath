@@ -271,17 +271,18 @@ Image Image::filtreMedian()
     {
         for(unsigned int i = 0; i < m_uiLargeur; i++)
         {
+            moy = 0;
             imgZone = getZone(i, j, largeur, hauteur);
             for(unsigned int k = 0; k < imgZone.getHauteur(); k++)
             {
                 for(unsigned int l = 0; l < imgZone.getLargeur(); l++)
                 {
                     tableau[k*imgZone.getLargeur()+l] = imgZone.at(l,k);
-                    moy = imgZone.at(l,k);
+                    moy += imgZone.at(l,k);
                 }
             }
 
-            if(abs((moy - at(i, j)) / (imgZone.getTaille() - 1) - at(i, j)) > 50)
+            if(abs((moy - at(i, j)) / (imgZone.getTaille() - 1) - at(i, j)) > 25)
             {
                 do
                 {

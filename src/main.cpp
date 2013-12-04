@@ -77,6 +77,8 @@ int main (int argc, char* argv[])
 
     cv::imshow("original", img);
 
+    Contour<double> m_cContour;
+
     while(key != 'q' && key != 'Q')
     {
         key = '-';
@@ -232,6 +234,8 @@ int main (int argc, char* argv[])
 
             imgAFTemp = imgAF;
 
+            for(unsigned int i = 0; i < seqPoint.size(); i++)
+                m_cContour.addComplex(seqPoint.at(i).x, seqPoint.at(i).y);
             cv::imshow("analyse frequentielle", imgAFTemp);
             cvWaitKey();
 
